@@ -8,6 +8,15 @@ import edu.accesodatos.actividad14.mysql.MySQLConnector;
 import edu.accesodatos.actividad14.postgresql.PostgresqlConnector;
 import edu.accesodatos.actividad14.util.QueryBuilder;
 
+/**
+ * Clase Inicio, esta es la clase de prueba y la clase donde se van a realizar las consultas
+ * especificadas en la actividad. Se haran 2 consultas con PostgreSQL y 2 modificaciones con
+ * MySQL
+ * 
+ * @author Daniel Caparros Duran
+ * @since 1.0
+ * @version 1.0
+ */
 public class Inicio {
     public static void main(String[] args) {
         PostgresqlConnector conector = new PostgresqlConnector("localhost", 5432, "postgres", "usuario", "AccesoDatos14-1");
