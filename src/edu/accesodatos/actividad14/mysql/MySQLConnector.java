@@ -57,4 +57,17 @@ public class MySQLConnector {
             e.printStackTrace();
         }
     }
+
+    /**
+     * Metodo encargado de realizar una insercion en base a una sentencia SQL
+     * @param sql La sentencia SQL obtenida por un objeto QueryBuilder o escrita a mano
+     */
+    public void insertar(String sql){
+        try {
+            Statement estado = this.conexion.createStatement();
+            estado.executeUpdate(sql);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 }

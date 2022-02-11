@@ -146,6 +146,37 @@ public class QueryBuilder {
     }
 
     /**
+     * Metodo insert, este metodo lo que realiza es la creacion de una sentencia insert
+     * en el queryBuilder, como insert no necesita ninguna sentencia WHERE ni nada por el estilo
+     * deberia de ser usado solo y construirse despues de usarse
+     * @param tabla La tabla en la que se van a insertar los datos
+     * @param values Los valores que va a tomar esa fila
+     * @return Una instancia de si mismo para seguir concatenando
+     */
+    public QueryBuilder insert(String tabla, ArrayList<Object> values){
+        String query = "insert into `"+tabla+"` values(";
+        for(int i = 0; i < values.size(); i++){
+            Object valor = values.get(i);
+            if(valor == null){
+                query += "null";
+            }else if(valor instanceof Integer){
+                query += valor;
+            }else{
+                query += "'"+valor+"'";
+            }
+
+            if(i+1 >= values.size()){
+                query += ")";
+            }else{
+                query += ", ";
+            }
+        }
+        Fragment fragment = new Fragment(query);
+        this.fragmentos.add(fragment);
+        return this;
+    }
+
+    /**
      * Construye finalmente la query para poder ser utilizada
      * @return
      */

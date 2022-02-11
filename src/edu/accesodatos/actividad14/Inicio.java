@@ -1,12 +1,16 @@
 package edu.accesodatos.actividad14;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Random;
 
-import edu.accesodatos.actividad14.model.Usuario;
+import com.matisse.MtDatabase;
+import com.matisse.MtObjectFactory;
+import com.matisse.MtPackageObjectFactory;
+
+import edu.accesodatos.actividad14.matisse.MatisseController;
 import edu.accesodatos.actividad14.mysql.MySQLConnector;
-import edu.accesodatos.actividad14.postgresql.PostgresqlConnector;
 import edu.accesodatos.actividad14.util.QueryBuilder;
+import modelos.Usuario;
 
 /**
  * Clase Inicio, esta es la clase de prueba y la clase donde se van a realizar las consultas
@@ -19,42 +23,37 @@ import edu.accesodatos.actividad14.util.QueryBuilder;
  */
 public class Inicio {
     public static void main(String[] args) {
-        PostgresqlConnector conector = new PostgresqlConnector("localhost", 5432, "postgres", "usuario", "AccesoDatos14-1");
-        MySQLConnector connectorMySQL = new MySQLConnector("localhost", 3306, "root", "usuario", "actividadacceso14-1");
+        //Primero insertamos 5 valores aleatorios en la base de datos MySQL
+        //Para ello usamos un bucle y un metodo que genere los datos
+        MySQLConnector conectorMySQL = new MySQLConnector("localhost", 3306, "root", "usuario", "actividadacceso14-1");
+        for(int i = 0; i < 5; i++){
+            ArrayList<Object> valores = new ArrayList<>();
+            valores.add(null);
+            valores.add(Inicio.generateRandomNames(10));
+            valores.add(Inicio.generateRandomNames(10));
+            QueryBuilder query = new QueryBuilder().insert("usuarios", valores);
+            conectorMySQL.insertar(query.build());            
+        }
 
-        //Sentencia 1 Postgres
-        QueryBuilder queryBuilder = new QueryBuilder();
-        String query = queryBuilder.select("usuarios").build();
-        ArrayList<ArrayList<HashMap<String, Object>>> todo = conector.select(query);
-        ArrayList<Usuario> usuarios = Usuario.parseUsuarios(todo);
-        
-        //Sentencia 2 Postgres
-        QueryBuilder queryBuilder2 = new QueryBuilder();
-        ArrayList<String> condicionales = new ArrayList<>();
-        condicionales.add("id = 1");
-        String query2 = queryBuilder2.select("usuarios").where(condicionales, null).build();
+        //Luego haciendo uso del metodo eliminarPrimeros eliminamos unicamente 5 registros de la base
+        //matisse
+        MatisseController controladorMatisse = new MatisseController("example", "modelos");
+        controladorMatisse.eliminarPrimeros(5);
+    }
 
-        ArrayList<ArrayList<HashMap<String, Object>>> todo2 = conector.select(query2);
-        ArrayList<Usuario> usuarios2 = Usuario.parseUsuarios(todo2);
+    /**
+     * Metodo generateRandomNames. Este metodo de lo que se encarga es de generar un string de caracteres aleatorios que
+     * podamos utilizar como nombre de prueba
+     * @param cantLetras
+     * @return
+     */
+    public static String generateRandomNames(int cantLetras){
+        String nombre = "";
+        Random random = new Random();
+        for(int i = 0; i < cantLetras; i++){
+            nombre += ((char) (random.nextInt(65)+57))+"";
+        }
 
-        //Sentencia 1 MySQL
-        QueryBuilder queryBuilderMySQL1 = new QueryBuilder();
-        ArrayList<String> valores1 = new ArrayList<>();
-        valores1.add("nombre = 'Pepito'");
-        String queryMySQL1 = queryBuilderMySQL1.update("usuarios", valores1).build();
-
-        connectorMySQL.modificar(queryMySQL1);
-
-        //Sentencia 2 MySQL
-        QueryBuilder queryBuilderMySQL2 = new QueryBuilder();
-        ArrayList<String> valores2 = new ArrayList<>();
-        ArrayList<String> condicionalesMySQL = new ArrayList<>();
-        condicionalesMySQL.add("id = '2'");
-        valores2.add("nombre = 'AAAAA'");
-
-        String queryMySQL2 = queryBuilderMySQL2.update("usuarios", valores2).where(condicionalesMySQL, null).build();
-
-        connectorMySQL.modificar(queryMySQL2);
-        System.out.println("");
+        return nombre;
     }
 }
